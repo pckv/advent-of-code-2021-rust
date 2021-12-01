@@ -4,7 +4,14 @@ pub fn run() {
     let depth_measurements = read_numbers_from_input("src/day_01/input.txt");
     println!("Loaded {} depth measurements from input.txt", depth_measurements.len());
 
-    // Count the number of times a depth measurement increases
+    println!("Part one");
+    part_one(&depth_measurements);
+
+    println!("\nPart two");
+    part_two(&depth_measurements);
+}
+
+fn part_one(depth_measurements: &Vec<i32>) {
     let mut increases = 0;
  
     // Add every increasing value
@@ -17,3 +24,26 @@ pub fn run() {
     println!("Answer: {}", increases);
 }
 
+fn part_two(depth_measurements: &Vec<i32>) {
+    let mut increases = 0;
+ 
+    for i in 3..depth_measurements.len() {
+        let first_sum = sum_range(depth_measurements, i - 3, i - 1);
+        let second_sum = sum_range(depth_measurements, i - 2, i);
+
+        if second_sum > first_sum {
+            increases += 1;
+        }
+    }
+
+    println!("Answer: {}", increases);
+}
+
+fn sum_range(numbers: &Vec<i32>, start_index: usize, end_index: usize) -> i32 {
+    let mut sum = 0;
+    for i in start_index..end_index + 1 {
+        sum += numbers[i];
+    }
+
+    return sum;
+}
