@@ -1,6 +1,7 @@
 {
     "recommendations": [
         "rust-lang.rust",
-        "vadimcn.vscode-lldb"
+        "vadimcn.vscode-lldb",
+        "statiolake.vscode-rustfmt"
     ]
 }
