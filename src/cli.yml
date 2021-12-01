@@ -1,0 +1,9 @@
+name: advent-of-code-2021-rust
+version: "0.1.0"
+author: Per Christian Kvalvik <pc@kvavlik.no>
+about: Advent of Code 2021 tasks
+args:
+  - DAY:
+      help: Which day to run. Defaults to today.
+      required: false
+      index: 1
