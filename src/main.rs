@@ -7,6 +7,7 @@ use chrono::Local;
 
 mod common;
 mod day_01;
+mod day_02;
 
 fn main() {
     let yaml = load_yaml!("cli.yml");
@@ -27,6 +28,7 @@ fn main() {
 fn run_day(day: u8) {
     match day {
         1 => day_01::run(),
+        2 => day_02::run(),
         _ => println!("No task for day {}", day),
     }
 }
