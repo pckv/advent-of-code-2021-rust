@@ -1,7 +1,7 @@
-use std::io::Lines;
-use std::io::BufReader;
-use std::io::BufRead;
 use std::fs::File;
+use std::io::BufRead;
+use std::io::BufReader;
+use std::io::Lines;
 
 pub fn get_file_reader(file_path: &str) -> BufReader<File> {
     let file = File::open(file_path).expect("file wasn't found.");

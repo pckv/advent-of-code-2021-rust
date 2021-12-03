@@ -114,7 +114,7 @@ fn parse_direction(direction: &str) -> Result<Direction, &'static str> {
         "forward" => Ok(Direction::Forward),
         "up" => Ok(Direction::Up),
         "down" => Ok(Direction::Down),
-        _ => return Err("invalid direction"),
+        _ => Err("invalid direction"),
     };
 }
 
