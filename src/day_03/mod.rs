@@ -1,19 +1,29 @@
 use crate::common::get_file_lines;
+use core::ops::Range;
 
-fn line_to_bytes(line: &String) -> Vec<u8> {
-    return line
-        .chars()
-        .map(|bit| match bit {
-            '0' => 0,
-            _ => 1,
-        })
-        .collect();
-}
+// A note on terminology: a "byte" in this module is of variable length
+// and as such may be any number of bits long. The provided input uses
+// a bit-length of 12
+type Bit = u8;
+type Byte = Vec<Bit>;
+
+type FilterFn = fn(u32, u32) -> Bit;
 
 pub fn run() {
-    let bytes: Vec<Vec<u8>> = get_file_lines("src/day_03/input.txt")
-        .map(|line| line_to_bytes(&line.unwrap()))
+    // Convert bytes to a 2D-array of binary digits
+    let bytes: Vec<Byte> = get_file_lines("src/day_03/input.txt")
+        .map(|line| {
+            line.unwrap()
+                .chars()
+                .map(|bit| match bit {
+                    '0' => 0,
+                    '1' => 1,
+                    _ => panic!("invalid bit"),
+                })
+                .collect()
+        })
         .collect();
+
     println!("\nPart one");
     let result = part_one(&bytes);
     println!("Answer: {}", result);
@@ -23,56 +33,60 @@ pub fn run() {
     println!("Answer: {}", result);
 }
 
-fn filter_bits(bytes: &Vec<Vec<u8>>, filter: fn(u32, u32) -> u8) -> Vec<u8> {
-    let positions = bytes[0].len();
+fn part_one(bytes: &Vec<Byte>) -> u32 {
+    let gamma = byte_to_u32(&filter_bits(&bytes, filter_common_bits));
+    let epsilon = byte_to_u32(&filter_bits(&bytes, filter_uncommon_bits));
 
-    return (0..positions)
+    return gamma * epsilon;
+}
+
+fn part_two(bytes: &Vec<Byte>) -> u32 {
+    let oxygen_rating = get_rating(&bytes, filter_common_bits);
+    let co2_scrubber_rating = get_rating(&bytes, filter_uncommon_bits);
+
+    return oxygen_rating * co2_scrubber_rating;
+}
+
+fn iter_positions(bytes: &Vec<Byte>) -> Range<usize> {
+    return 0..bytes[0].len();
+}
+
+fn filter_bits(bytes: &Vec<Byte>, filter: FilterFn) -> Byte {
+    return iter_positions(&bytes)
         .map(|position| filter_bit(bytes, filter, position))
         .collect();
 }
 
-fn filter_bit(bytes: &Vec<Vec<u8>>, filter: fn(u32, u32) -> u8, position: usize) -> u8 {
-    let mut zeros: u32 = 0;
-    let mut ones: u32 = 0;
-    for byte in bytes {
-        match byte[position] {
-            0 => zeros += 1,
-            _ => ones += 1,
-        }
-    }
+fn filter_bit(bytes: &Vec<Byte>, filter: FilterFn, position: usize) -> Bit {
+    let (zeros, ones) =
+        bytes
+            .into_iter()
+            .fold((0, 0), |(zeros, ones), byte| match byte[position] {
+                0 => (zeros + 1, ones),
+                _ => (zeros, ones + 1),
+            });
 
     return filter(zeros, ones);
 }
 
-fn bits_to_u32(bits: &Vec<u8>) -> u32 {
+fn byte_to_u32(bits: &Byte) -> u32 {
     return bits
         .into_iter()
         .fold(0, |acc, &bit| (acc << 1) | bit as u32);
 }
 
-fn filter_common_bits(zeros: u32, ones: u32) -> u8 {
+fn filter_common_bits(zeros: u32, ones: u32) -> Bit {
     return if zeros > ones { 0 } else { 1 };
 }
 
-fn filter_uncommon_bits(zeros: u32, ones: u32) -> u8 {
+fn filter_uncommon_bits(zeros: u32, ones: u32) -> Bit {
     return if ones >= zeros { 0 } else { 1 };
 }
 
-fn part_one(bytes: &Vec<Vec<u8>>) -> u32 {
-    let gamma_bits = filter_bits(&bytes, filter_common_bits);
-    let gamma = bits_to_u32(&gamma_bits);
-
-    let epsilon_bits = filter_bits(&bytes, filter_uncommon_bits);
-    let epsilon = bits_to_u32(&epsilon_bits);
-
-    return gamma * epsilon;
-}
-
-fn get_rating(bytes: &Vec<Vec<u8>>, filter: fn(u32, u32) -> u8) -> u32 {
+fn get_rating(bytes: &Vec<Byte>, filter: FilterFn) -> u32 {
     let mut remaining_bytes = bytes.to_vec();
-    let positions = bytes[0].len();
 
-    for position in 0..positions {
+    for position in iter_positions(&bytes) {
         if remaining_bytes.len() == 1 {
             break;
         }
@@ -84,12 +98,5 @@ fn get_rating(bytes: &Vec<Vec<u8>>, filter: fn(u32, u32) -> u8) -> u32 {
             .collect();
     }
 
-    return bits_to_u32(&remaining_bytes[0]);
-}
-
-fn part_two(bytes: &Vec<Vec<u8>>) -> u32 {
-    let oxygen_rating = get_rating(&bytes, filter_common_bits);
-    let co2_scrubber_rating = get_rating(&bytes, filter_uncommon_bits);
-
-    return oxygen_rating * co2_scrubber_rating;
+    return byte_to_u32(&remaining_bytes[0]);
 }
