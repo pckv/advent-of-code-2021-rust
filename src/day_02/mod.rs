@@ -2,6 +2,7 @@ use crate::common::get_file_lines;
 
 pub fn run() {
     let instructions = read_instructions("src/day_02/input.txt");
+
     println!("\nPart one");
     let result = part_one(&instructions);
     println!("Answer: {}", result);
