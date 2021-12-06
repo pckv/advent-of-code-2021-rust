@@ -2,7 +2,6 @@ use crate::common::get_file_lines;
 use crate::day_05::line::Line;
 use crate::day_05::position::Position;
 use std::collections::HashMap;
-use std::collections::HashSet;
 
 mod line;
 mod position;

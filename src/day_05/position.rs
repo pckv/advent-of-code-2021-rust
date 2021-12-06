@@ -1,7 +1,7 @@
 use core::num::ParseIntError;
 use core::str::FromStr;
 
-#[derive(PartialEq, Eq, Hash, Clone, Copy)]
+#[derive(PartialEq, Eq, Hash)]
 pub struct Position {
     pub x: u32,
     pub y: u32,
