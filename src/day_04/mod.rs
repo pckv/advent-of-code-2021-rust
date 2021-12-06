@@ -105,7 +105,7 @@ fn update_board_state(board: &Board, board_state: &mut Board, number: u8) {
 fn has_won(board_state: &Board) -> bool {
     // Look for horizontal wins
     for row in board_state {
-        if row.into_iter().all(|flagged| *flagged == 1) {
+        if row.into_iter().all(is_flagged) {
             return true;
         }
     }
@@ -114,14 +114,18 @@ fn has_won(board_state: &Board) -> bool {
     for column in 0..BOARD_WIDTH {
         if (0..BOARD_HEIGTH)
             .into_iter()
-            .map(|row| board_state[row][column])
-            .all(|flagged| flagged == 1)
+            .map(|row| &board_state[row][column])
+            .all(is_flagged)
         {
             return true;
         }
     }
 
     return false;
+}
+
+fn is_flagged(state: &u8) -> bool {
+    return *state == 1;
 }
 
 fn get_score(board: &Board, board_state: &Board, number: u8) -> u32 {
