@@ -3,7 +3,7 @@ extern crate clap;
 use clap::App;
 
 extern crate chrono;
-use chrono::Local;
+use chrono::{Duration, Local};
 
 mod common;
 mod day_01;
@@ -40,7 +40,7 @@ fn run_day(day: u8) {
 }
 
 fn get_today() -> u8 {
-    let now = Local::now();
+    let now = Local::now() - Duration::hours(6);
     let day = now.format("%d").to_string();
     return day.parse::<u8>().unwrap();
 }
