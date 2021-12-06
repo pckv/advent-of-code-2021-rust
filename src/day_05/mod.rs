@@ -1,6 +1,7 @@
 use crate::common::get_file_lines;
 use crate::day_05::line::Line;
 use crate::day_05::position::Position;
+use std::collections::HashMap;
 use std::collections::HashSet;
 
 mod line;
@@ -47,28 +48,19 @@ fn count_overlapping_positions(
     lines: &Vec<Line>,
     position_iterator: fn(&Line) -> Option<Vec<Position>>,
 ) -> u32 {
-    let mut positions: HashSet<Position> = HashSet::new();
-
-    // Keep track of overlapped positions as we only want to count them once
-    let mut overlapped_positions: HashSet<Position> = HashSet::new();
-    let mut count_overlaps = 0;
+    let mut position_count: HashMap<Position, u32> = HashMap::new();
 
     for line in lines {
         if let Some(new_positions) = position_iterator(&line) {
             for new_position in new_positions {
-                if positions.contains(&new_position)
-                    && !overlapped_positions.contains(&new_position)
-                {
-                    count_overlaps += 1;
-                    overlapped_positions.insert(new_position);
-                }
-
-                positions.insert(new_position);
+                *position_count.entry(new_position).or_insert(0) += 1;
             }
         }
     }
 
-    return count_overlaps;
+    return position_count
+        .values()
+        .fold(0, |acc, count| if *count > 1 { acc + 1 } else { acc });
 }
 
 // Gets positions from vertical and horizontal lines only
