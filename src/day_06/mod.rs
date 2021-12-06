@@ -1,4 +1,5 @@
 use crate::common::get_file_lines;
+use std::collections::HashMap;
 
 const FISH_TIMER: u32 = 7;
 const NEW_FISH_TIMER: u32 = 9;
@@ -22,41 +23,38 @@ pub fn run() {
     println!("Result: {}", result);
 }
 
-fn part_one(lanternfish: &Vec<u32>) -> u32 {
+fn part_one(lanternfish: &Vec<u32>) -> u64 {
     return simulate(&lanternfish, 80);
 }
 
-fn part_two(lanternfish: &Vec<u32>) -> u32 {
+fn part_two(lanternfish: &Vec<u32>) -> u64 {
     return simulate(&lanternfish, 256);
 }
 
-fn advance(lanternfish: &mut Vec<u32>, day: u32) {
-    let mut new_fish: u32 = 0;
+fn advance(lanternfish: &mut HashMap<u32, u64>, day: u32) {
+    let reproduce = day % FISH_TIMER;
 
-    for fish in lanternfish.into_iter() {
-        // Support waiting 9 days for new fish
-        if day > FISH_TIMER && *fish == day {
-            *fish = day % FISH_TIMER;
-            new_fish += 1;
-        } else if *fish == (day % FISH_TIMER) {
-            new_fish += 1;
-        }
+    // Update todays reproducing fish with the new fish
+    if day > FISH_TIMER && lanternfish.contains_key(&day) {
+        *lanternfish.entry(reproduce).or_insert(0) += lanternfish[&day];
+        lanternfish.remove(&day);
     }
 
-    for _ in 0..new_fish {
-        lanternfish.push(day + NEW_FISH_TIMER);
+    // Add new fish to future reproduction
+    if lanternfish.contains_key(&reproduce) {
+        lanternfish.insert(day + NEW_FISH_TIMER, lanternfish[&reproduce]);
     }
 }
 
-fn simulate(original_lanternfish: &Vec<u32>, days: u32) -> u32 {
-    let mut lanternfish = original_lanternfish.clone();
+fn simulate(original_lanternfish: &Vec<u32>, days: u32) -> u64 {
+    let mut lanternfish: HashMap<u32, u64> = HashMap::new();
+    for fish in original_lanternfish {
+        *lanternfish.entry(*fish).or_insert(0) += 1;
+    }
 
     for day in 0..days {
-        if day % 10 == 0 {
-            println!("Simulation: day {}", day);
-        }
         advance(&mut lanternfish, day);
     }
 
-    return lanternfish.len() as u32;
+    return lanternfish.values().sum();
 }
