@@ -10,6 +10,7 @@ mod day_01;
 mod day_02;
 mod day_03;
 mod day_04;
+mod day_05;
 
 fn main() {
     let yaml = load_yaml!("cli.yml");
@@ -33,6 +34,7 @@ fn run_day(day: u8) {
         2 => day_02::run(),
         3 => day_03::run(),
         4 => day_04::run(),
+        5 => day_05::run(),
         _ => println!("No task for day {}", day),
     }
 }
