@@ -33,6 +33,7 @@ fn part_one(crab_positions: &Vec<u32>) -> u32 {
 fn part_two(crab_positions: &Vec<u32>) -> u32 {
     // Get the floored and ceiled average of all positions
     let average = get_average(&crab_positions);
+
     // Calculate fuel cost for each position
     let floored_cost = fuel_cost(&crab_positions, average.floor() as u32);
     let ceiled_cost = fuel_cost(&crab_positions, average.ceil() as u32);
